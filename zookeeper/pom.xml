@@ -3,24 +3,40 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>1.7</source>
+                    <target>1.7</target>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 
     <parent>
         <groupId>com.ericliu.framework</groupId>
         <artifactId>parent</artifactId>
         <version>1.0-SNAPSHOT</version>
+        <!--<relativePath>../pom.xml</relativePath>-->
     </parent>
     <artifactId>zookeeper</artifactId>
-    <version>1.0-SNAPSHOT</version>
-    <packaging>jar</packaging>
+    <!--<version>1.0-SNAPSHOT</version>-->
+    <!--<packaging>jar</packaging>-->
+
 
     <dependencies>
         <dependency>
             <groupId>org.apache.zookeeper</groupId>
             <artifactId>zookeeper</artifactId>
+            <!--<version>3.4.9</version>-->
         </dependency>
         <dependency>
             <groupId>com.101tec</groupId>
             <artifactId>zkclient</artifactId>
+            <!--<version>0.2</version>-->
         </dependency>
     </dependencies>
 
