@@ -22,7 +22,7 @@ public class App {
 
     private ZkClient zooKeeper;
 
-    private Map<String, AppInfo> map = new HashMap<>();
+//    private Map<String, AppInfo> map = new HashMap<>();
 
     public App(String zkHost) {
         this.zooKeeper = new ZkClient(zkHost);
@@ -36,19 +36,19 @@ public class App {
 
             @Override
             public void handleNewSession() throws Exception {
-
+                System.out.println("new session");
             }
         });
 
         //当有新节点变化时候注册
         zooKeeper.subscribeChildChanges(path, new IZkChildListener() {
             @Override
-            public void handleChildChange(String s, List<String> list) throws Exception {
-                System.out.println(" child node changes");
-                for (String childName : list) {
-                    registerApp(childName);
-                    getAppInfo(childName);
-                }
+            public void handleChildChange(String s, List<String> list) {
+                System.out.println(" child node changes: path:" + s + " list:" + list);
+//                for (String childName : list) {
+//                    registerApp(childName);
+//                    getAppInfo(childName);
+//                }
             }
         });
 
@@ -61,32 +61,25 @@ public class App {
      *
      * @param appName
      */
-    public void registerApp(String appName) {
+    private void registerApp(String appName) {
         if (!zooKeeper.exists(path + "/" + appName)) {
             zooKeeper.createPersistent(path + "/" + appName);
-        } else {
-            AppInfo appInfo = zooKeeper.readData(path + "/" + appName);
-            if (appInfo != null) {
-                map.put(appInfo.getAppName(), appInfo);
-            }
+            zooKeeper.subscribeDataChanges(path + "/" + appName, new IZkDataListener() {
+                @Override
+                public void handleDataChange(String s, Object o) throws Exception {
+                    AppInfo data = (AppInfo) o;
+                    System.out.println("modify date change.data:" + data);
+//                map.put(data.getAppName(), data);
+                }
+
+                @Override
+                public void handleDataDeleted(String s) throws Exception {
+                    System.out.println("delte date change.data.");
+                    String[] paths = s.split("/");
+                    String key = paths[s.length() - 1];
+                }
+            });
         }
-
-        zooKeeper.subscribeDataChanges(path + "/" + appName, new IZkDataListener() {
-            @Override
-            public void handleDataChange(String s, Object o) throws Exception {
-                AppInfo data = (AppInfo) o;
-                System.out.println("modify date change.data:" + data);
-                map.put(data.getAppName(), data);
-            }
-
-            @Override
-            public void handleDataDeleted(String s) throws Exception {
-                System.out.println("delte date change.data.");
-                String[] paths = s.split("/");
-                String key = paths[s.length() - 1];
-                map.remove(key);
-            }
-        });
     }
 
     /**
@@ -105,13 +98,13 @@ public class App {
      * @return
      */
     public AppInfo getAppInfo(String appName) {
-        AppInfo appInfo = map.get(appName);
-        if (appInfo == null) {
-            appInfo = zooKeeper.readData(path + "/" + appName);
-            if (appInfo != null) {
-                map.put(appInfo.getAppName(), appInfo);
-            }
-        }
+//        AppInfo appInfo = map.get(appName);
+//        if (appInfo == null) {
+        AppInfo appInfo = zooKeeper.readData(path + "/" + appName);
+//            if (appInfo != null) {
+//                map.put(appInfo.getAppName(), appInfo);
+//            }
+//        }
         return appInfo;
     }
 
@@ -121,6 +114,14 @@ public class App {
      * @return
      */
     public Map<String, AppInfo> getAll() {
+//        return map;
+        Map<String, AppInfo> map = new HashMap<>();
+        List<String> childred = zooKeeper.getChildren(path);
+        for (String childName : childred) {
+//            registerApp(childName);
+            AppInfo apppInfo = getAppInfo(childName);
+            map.put(apppInfo.getAppName(), apppInfo);
+        }
         return map;
     }
 
@@ -129,19 +130,21 @@ public class App {
      *
      * @param appInfo
      */
-    public void writeApp(AppInfo appInfo) {
+    public Stat writeApp(AppInfo appInfo) {
+        registerApp(appInfo.getAppName());
         Stat stat = zooKeeper.writeData(path + "/" + appInfo.getAppName(), appInfo);
-        map.put(appInfo.getAppName(), appInfo);
+//        map.put(appInfo.getAppName(), appInfo);
+        return stat;
     }
 
     public void syncAll() {
-        List<String> list = zooKeeper.getChildren(path);
-        for (String childName : list) {
-            registerApp(childName);
-            AppInfo appinfo = getAppInfo(childName);
-            if (appinfo != null) {
-                map.put(appinfo.getAppName(), appinfo);
-            }
-        }
+//        List<String> list = zooKeeper.getChildren(path);
+//        for (String childName : list) {
+//            registerApp(childName);
+//            AppInfo appinfo = getAppInfo(childName);
+//            if (appinfo != null) {
+//                map.put(appinfo.getAppName(), appinfo);
+//            }
+//        }
     }
 }
