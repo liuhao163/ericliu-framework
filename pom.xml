@@ -5,11 +5,12 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.ericliu.framework</groupId>
-    <artifactId>parent</artifactId>
+    <artifactId>ericliu-framework-parent</artifactId>
     <version>1.0-SNAPSHOT</version>
     <packaging>pom</packaging>
     <modules>
         <module>zookeeper</module>
+        <module>ssl</module>
     </modules>
 
     <properties>
