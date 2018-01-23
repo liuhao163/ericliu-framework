@@ -10,7 +10,6 @@
     <packaging>pom</packaging>
     <modules>
         <module>zookeeper</module>
-        <module>ssl</module>
     </modules>
 
     <properties>

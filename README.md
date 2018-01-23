@@ -3,9 +3,3 @@
 
 ## zookeeper
 zookeeper的学习用
-
-## ssl
-对证书的操作
-支持对ssl加密、解密
-支持der-->pem证书的转化
-支持pcks12证书分离
